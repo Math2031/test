@@ -3,6 +3,8 @@
     xmlns:mvc="sap.ui.core.mvc"
     displayBlock="true"
     xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.ui.layout.form"
 >
     <App id="app">
         <pages>
@@ -12,7 +14,65 @@
                         error="NotFound"
                         src="images/MoviesHeader.png"
                         width="100%"
+                        press="sap.m.MessageToast.show('Test message')"
                     />
+                    <f:SimpleForm
+                        id="form"
+                        editable="true"
+                        layout="ColumnLayout"
+                        title="Find Movies"
+                        columnsM="2"
+                        columnsL="3"
+                        columnsXL="3"
+                    >
+                        <f:content>
+                            <Label
+                                text="City"
+                                labelFor="city"
+                            />
+                            <SearchField
+                                id="city"
+                                width="100%"
+                                showSearchButton="false"
+                                placeholder="Enter City"
+                            />
+                            <Label
+                                text="Genre"
+                                labelFor="genre"
+                            />
+                            <Select
+                                id="genre"
+                                width="100%"
+                            >
+                                <core:ListItem
+                                    icon="sap-icon://video"
+                                    key=""
+                                    text="All"
+                                />
+                                <core:ListItem
+                                    icon="sap-icon://physical-activity"
+                                    key="Action"
+                                    text="Action"
+                                />
+                                <core:ListItem
+                                    icon="sap-icon://electrocardiogram"
+                                    key="Horror"
+                                    text="Horror"
+                                />
+                                <core:ListItem
+                                    icon="sap-icon://paper-plane"
+                                    key="ScienceFiction"
+                                    text="Science Fiction"
+                                />
+                            </Select>
+                            <Button
+                                type="Emphasized"
+                                text="Find Movies"
+                                class="sapUiSmallMarginTop"
+                                press=".onPress('for movies!')"
+                            />
+                        </f:content>
+                    </f:SimpleForm>
                 </content>
                 <footer>
                     <Toolbar>
