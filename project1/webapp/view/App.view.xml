@@ -1,7 +1,32 @@
-<mvc:View controllerName="opensap.project1.controller.App"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m">
-    <Page id="page" title="{i18n>title}">
-        <content />
-    </Page>
+<mvc:View
+    controllerName="opensap.project1.controller.App"
+    xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
+    xmlns="sap.m"
+>
+    <App id="app">
+        <pages>
+            <Page title="{i18n>title}">
+                <content>
+                    <Image
+                        error="NotFound"
+                        src="images/MoviesHeader.png"
+                        width="100%"
+                    />
+                </content>
+                <footer>
+                    <Toolbar>
+                        <ToolbarSpacer />
+                        <Link
+                            emphasized="true"
+                            target="_blank"
+                            href="https://www.imdb.com/"
+                            text="Explore the IMDb Movie Database"
+                        />
+                        <ToolbarSpacer />
+                    </Toolbar>
+                </footer>
+            </Page>
+        </pages>
+    </App>
 </mvc:View>
