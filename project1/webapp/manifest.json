@@ -78,14 +78,24 @@
         "viewPath": "opensap.project1.view",
         "controlAggregation": "pages",
         "controlId": "app",
-        "clearControlAggregation": false
+        "clearControlAggregation": false,
+        "bypassed": {
+          "target" : "NotFound"
+        }
       },
       "routes": [
         {
-          "name": "RouteApp",
+          "name": "Home",
           "pattern": ":?query:",
           "target": [
             "TargetApp"
+          ]
+        },
+        {
+          "name": "Detail",
+          "pattern": "/movies/{movieId}/appointments/{appointmentId}",
+          "target": [
+            "Detail"
           ]
         }
       ],
@@ -96,6 +106,20 @@
           "clearControlAggregation": false,
           "viewId": "App",
           "viewName": "App"
+        },
+        "Detail": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "Detail",
+          "viewName": "Detail"
+        },
+        "NotFound": {
+          "viewType": "XML",
+          "transition": "slide",
+          "clearControlAggregation": false,
+          "viewId": "NotFound",
+          "viewName": "NotFound"
         }
       }
     },
