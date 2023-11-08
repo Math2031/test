@@ -26,6 +26,9 @@
                         path: 'CustomerName',
                         descending: false
                     },
+                    parameters:{
+                        expand: 'ToBusinessPartner'
+                    },
                     groupHeaderFactory: '.createGroupHeader'
                 }"
                 busyIndicatorDelay="{listView>/delay}"
@@ -94,7 +97,20 @@
                             path: 'NetAmount',
                             formatter: '.formatter.numberUnit'
                         }"
-                        numberUnit="{CurrencyCode}" />
+                        numberUnit="{CurrencyCode}">
+                        <ObjectAttribute text="{ path:'CreatedAt', type:'sap.ui.model.type.Date',formatOptions : {
+                            style: 'short'
+                        }}"
+                        />
+                         <ObjectAttribute text="{ToBusinessPartner/BusinessPartnerID}"/>
+                        <firstStatus>
+                           <ObjectStatus title="{ToBusinessPartner/Address/Country}" text="{ToBusinessPartner/Address/City}"/>
+                         </firstStatus>
+                         <markers>
+                         <ObjectMarker type="{= ${ToBusinessPartner/Address/Country} === 'MX' &amp;&amp;
+                         ${ToBusinessPartner/Address/City} === 'Mexiko City' ? 'Favorite' : 'Flagged'}" ></ObjectMarker>
+                         </markers>
+                    </ObjectListItem>
                 </items>
             </List>
         </semantic:content>
