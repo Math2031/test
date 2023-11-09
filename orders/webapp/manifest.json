@@ -72,7 +72,9 @@
       "": {
         "dataSource": "mainService",
         "preload": true,
-        "settings": {}
+        "settings": {
+          "defaultBindingMode": "TwoWay"
+        }
       }
     },
     "resources": {
@@ -107,6 +109,15 @@
           ]
         },
         {
+					"pattern": "SalesOrderSet/{objectId}/create",
+					"name": "create",
+					"target": [
+						"list",
+						"object",
+						"create"
+					]
+				},
+        {
           "pattern": "SalesOrderSet/{objectId}/Item/{itemPosition}",
           "name": "info",
           "target": [
@@ -134,6 +145,12 @@
           "viewLevel": 2,
           "controlAggregation": "endColumnPages"
         },
+        "create": {
+					"viewType": "XML",
+					"viewName": "Create",
+					"controlAggregation": "endColumnPages",
+					"viewId": "create"
+				},
         "detailObjectNotFound": {
           "viewName": "DetailObjectNotFound",
           "viewId": "detailObjectNotFound",

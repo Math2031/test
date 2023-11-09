@@ -84,6 +84,13 @@ sap.ui.define([
 			}, bReplace);
         },
 
+        onCreate: function (oEvent) {
+			var bReplace = !this.getModel("device").getData().system.phone;
+			this.getRouter().navTo("create", {
+				objectId : oEvent.getSource().getBindingContext().getProperty("SalesOrderID")
+			}, bReplace);
+		},
+
         /* =========================================================== */
         /* begin: internal methods                                     */
         /* =========================================================== */
