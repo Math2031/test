@@ -4,157 +4,199 @@
     xmlns:semantic="sap.f.semantic"
     xmlns:tnt="sap.tnt"
     xmlns:mvc="sap.ui.core.mvc"
-    xmlns:si="sap.suite.ui.commons.statusindicator">
-
+    xmlns:l="sap.ui.layout"
+    xmlns:si="sap.suite.ui.commons.statusindicator"
+    xmlns:control="opensap.orders.orders.control">
     <semantic:SemanticPage
         id="detailPage"
         busy="{detailView>/busy}"
         busyIndicatorDelay="{detailView>/delay}"
-        showFooter="true">
+        showFooter="true"
+    >
         <semantic:titleHeading>
             <Title
                 text="{CustomerName}"
-                level="H2"/>
+                level="H2"
+            />
         </semantic:titleHeading>
         <semantic:headerContent>
-            <ObjectAttribute title="{i18n>priceTitle}"/>
+            <ObjectAttribute title="{i18n>priceTitle}" />
             <ObjectNumber
                 number="{
                     path: 'NetAmount',
                     formatter: '.formatter.numberUnit'
                 }"
-                unit="{CurrencyCode}" />
-                <tnt:InfoLabel
-				text="{LifecycleStatusDescription}"
-				colorScheme="{
+                unit="{CurrencyCode}"
+            />
+            <tnt:InfoLabel
+                text="{LifecycleStatusDescription}"
+                colorScheme="{
 					path: 'LifecycleStatus',
 					formatter: '.formatter.deliveryStatus'
-				}"/>
+				}"
+            />
         </semantic:headerContent>
         <semantic:content>
-
-            <Table
-                id="lineItemsList"
-                width="auto"
-                items="{ToLineItems}"
-                updateFinished=".onListUpdateFinished"
-                noDataText="{i18n>detailLineItemTableNoDataText}"
-                busyIndicatorDelay="{detailView>/lineItemTableDelay}"
-                sticky="ColumnHeaders,HeaderToolbar"
-                mode="SingleSelectMaster"
-                selectionChange=".onSelectChange">
-                <headerToolbar>
-                    <Toolbar>
-                        <Title
-                            id="lineItemsTitle"
-                            text="{detailView>/lineItemListTitle}"
-                            titleStyle="H3"
-                            level="H3"/>
-                    </Toolbar>
-                </headerToolbar>
-                <columns>
-                	<Column>
-						<Text text="{i18n>detailLineItemTableIDQuantity}"/>
-					</Column>
-					<Column>
-						<Text text="{i18n>detailLineItemTableIDColumn}"/>
-					</Column>
-					<Column
-						minScreenWidth="Tablet"
-						demandPopin="true">
-						<Text text="{i18n>detailLineItemTableDeliveryDate}"/>
-					</Column>
-					<Column>
-						<Text text="{i18n>detailLineItemTableDeliveryUrgency}"/>
-					</Column>
-                    <Column
-                        minScreenWidth="Tablet"
-                        demandPopin="true"
-                        hAlign="End">
-                        <Text text="{i18n>detailLineItemTableUnitNumberColumn}"/>
-                    </Column>
-                </columns>
-                <items>
-                   <ColumnListItem
-						selected="{= ${ItemPosition} === ${appView>/selectedItemId} }"
-						type="Navigation">
-						<cells>
-							<ObjectNumber
-								number="{Quantity}"/>
-							<ObjectIdentifier
-								title="{ProductID}"
-								text="{ItemPosition}"/>
-							<Text text="{
+            <l:VerticalLayout>
+                <control:OrderPreparation
+                    id="orderPreparations"
+                    confirm=".onConfirm"
+                />
+                <Table
+                    id="lineItemsList"
+                    width="auto"
+                    items="{ToLineItems}"
+                    updateFinished=".onListUpdateFinished"
+                    noDataText="{i18n>detailLineItemTableNoDataText}"
+                    busyIndicatorDelay="{detailView>/lineItemTableDelay}"
+                    sticky="ColumnHeaders,HeaderToolbar"
+                    mode="SingleSelectMaster"
+                    selectionChange=".onSelectChange"
+                >
+                    <headerToolbar>
+                        <Toolbar>
+                            <Title
+                                id="lineItemsTitle"
+                                text="{detailView>/lineItemListTitle}"
+                                titleStyle="H3"
+                                level="H3"
+                            />
+                        </Toolbar>
+                    </headerToolbar>
+                    <columns>
+                        <Column>
+                            <Text text="{i18n>detailLineItemTableIDQuantity}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>detailLineItemTableIDColumn}" />
+                        </Column>
+                        <Column
+                            minScreenWidth="Tablet"
+                            demandPopin="true"
+                        >
+                            <Text
+                                text="{i18n>detailLineItemTableDeliveryDate}"
+                            />
+                        </Column>
+                        <Column>
+                            <Text
+                                text="{i18n>detailLineItemTableDeliveryUrgency}"
+                            />
+                        </Column>
+                        <Column
+                            minScreenWidth="Tablet"
+                            demandPopin="true"
+                            hAlign="End"
+                        >
+                            <Text
+                                text="{i18n>detailLineItemTableUnitNumberColumn}"
+                            />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem
+                            selected="{= ${ItemPosition} === ${appView>/selectedItemId} }"
+                            type="Navigation"
+                        >
+                            <cells>
+                                <ObjectNumber number="{Quantity}" />
+                                <ObjectIdentifier
+                                    title="{ProductID}"
+                                    text="{ItemPosition}"
+                                />
+                                <Text
+                                    text="{
 								path: 'DeliveryDate',
 								type: 'sap.ui.model.type.Date',
 								formatOptions: {
 									style: 'medium'
 								}
-							}"/>
-							<si:StatusIndicator
-								id="statusIndicator"
-								width="4.5rem"
-								height="3.5rem"
-								value="{= 100 - (Date.now() - Date.parse(${DeliveryDate})) / 86400000 * 7 }">
-								<si:ShapeGroup>
-									<si:LibraryShape id="customShape0" shapeId="vehicle_truck_1"/>
-								</si:ShapeGroup>
-								<si:propertyThresholds>
-									<si:PropertyThreshold fillColor="Error" toValue="50"/>
-									<si:PropertyThreshold fillColor="Critical" toValue="65"/>
-									<si:PropertyThreshold fillColor="Neutral" toValue="80"/>
-									<si:PropertyThreshold fillColor="Good" toValue="100"/>
-								</si:propertyThresholds>
-							</si:StatusIndicator>
-							<ObjectNumber
-								number="{
+							}"
+                                />
+                                <si:StatusIndicator
+                                    id="statusIndicator"
+                                    width="4.5rem"
+                                    height="3.5rem"
+                                    value="{= 100 - (Date.now() - Date.parse(${DeliveryDate})) / 86400000 * 7 }"
+                                >
+                                    <si:ShapeGroup>
+                                        <si:LibraryShape
+                                            id="customShape0"
+                                            shapeId="vehicle_truck_1"
+                                        />
+                                    </si:ShapeGroup>
+                                    <si:propertyThresholds>
+                                        <si:PropertyThreshold
+                                            fillColor="Error"
+                                            toValue="50"
+                                        />
+                                        <si:PropertyThreshold
+                                            fillColor="Critical"
+                                            toValue="65"
+                                        />
+                                        <si:PropertyThreshold
+                                            fillColor="Neutral"
+                                            toValue="80"
+                                        />
+                                        <si:PropertyThreshold
+                                            fillColor="Good"
+                                            toValue="100"
+                                        />
+                                    </si:propertyThresholds>
+                                </si:StatusIndicator>
+                                <ObjectNumber
+                                    number="{
 									path: 'NetAmount',
 									formatter: '.formatter.currencyValue'
 								}"
-								unit="{CurrencyCode}"/>
-						</cells>
-					</ColumnListItem>
-                </items>
-            </Table>
+                                    unit="{CurrencyCode}"
+                                />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </l:VerticalLayout>
         </semantic:content>
         <!--Semantic ShareMenu Buttons-->
         <semantic:sendEmailAction>
             <semantic:SendEmailAction
                 id="shareEmail"
-                press=".onSendEmailPress"/>
+                press=".onSendEmailPress"
+            />
         </semantic:sendEmailAction>
 
         <semantic:closeAction>
             <semantic:CloseAction
-                    id="closeColumn"
-                    press=".onCloseDetailPress"/>
+                id="closeColumn"
+                press=".onCloseDetailPress"
+            />
         </semantic:closeAction>
 
         <semantic:fullScreenAction>
             <semantic:FullScreenAction
-                    id="enterFullScreen"
-                    visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}"
-                    press=".toggleFullScreen"/>
+                id="enterFullScreen"
+                visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}"
+                press=".toggleFullScreen"
+            />
         </semantic:fullScreenAction>
         <semantic:exitFullScreenAction>
             <semantic:ExitFullScreenAction
-                    id="exitFullScreen"
-                    visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"
-                    press=".toggleFullScreen"/>
+                id="exitFullScreen"
+                visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"
+                press=".toggleFullScreen"
+            />
         </semantic:exitFullScreenAction>
 
         <semantic:positiveAction>
-			<semantic:PositiveAction/>
-		</semantic:positiveAction>
+            <semantic:PositiveAction />
+        </semantic:positiveAction>
 
-		<semantic:negativeAction>
-			<semantic:NegativeAction/>
-		</semantic:negativeAction>
+        <semantic:negativeAction>
+            <semantic:NegativeAction />
+        </semantic:negativeAction>
 
-		<semantic:footerCustomActions>
-			<Button text="{i18n>DetailFooterCancel}"/>
-		</semantic:footerCustomActions>
-
+        <semantic:footerCustomActions>
+            <Button text="{i18n>DetailFooterCancel}" />
+        </semantic:footerCustomActions>
     </semantic:SemanticPage>
-
 </mvc:View>
