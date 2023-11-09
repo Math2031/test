@@ -28,6 +28,7 @@ sap.ui.define([
             });
 
             this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
+            this.getRouter().getRoute("info").attachPatternMatched(this._onObjectMatched, this);
 
             this.setModel(oViewModel, "detailView");
 
@@ -74,6 +75,14 @@ sap.ui.define([
                 oViewModel.setProperty("/lineItemListTitle", sTitle);
             }
         },
+        
+        onSelectChange: function (oEvent) {
+            var bReplace = !this.getModel("device").getData().system.phone;
+			this.getRouter().navTo("info", {
+				objectId : (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("SalesOrderID"),
+				itemPosition : (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("ItemPosition")
+			}, bReplace);
+        },
 
         /* =========================================================== */
         /* begin: internal methods                                     */
@@ -87,6 +96,7 @@ sap.ui.define([
          */
         _onObjectMatched: function (oEvent) {
             var sObjectId =  oEvent.getParameter("arguments").objectId;
+            if(!sObjectId) return;
             this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
             this.getModel().metadataLoaded().then( function() {
                 var sObjectPath = this.getModel().createKey("SalesOrderSet", {
@@ -133,7 +143,7 @@ sap.ui.define([
                 this.getRouter().getTargets().display("detailObjectNotFound");
                 // if object could not be found, the selection in the list
                 // does not make sense anymore.
-                this.getOwnerComponent().oListSelector.clearListListSelection();
+                this.getOwnerComponent().oListSelector.clearMasterListSelection();
                 return;
             }
 
@@ -181,7 +191,7 @@ sap.ui.define([
         onCloseDetailPress: function () {
             this.getModel("appView").setProperty("/actionButtonsInfo/midColumn/fullScreen", false);
             // No item should be selected on list after detail page is closed
-            this.getOwnerComponent().oListSelector.clearListListSelection();
+            this.getOwnerComponent().oListSelector.clearMasterListSelection();
             this.getRouter().navTo("list");
         },
 

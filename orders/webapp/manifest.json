@@ -105,6 +105,15 @@
             "list",
             "object"
           ]
+        },
+        {
+          "pattern": "SalesOrderSet/{objectId}/Item/{itemPosition}",
+          "name": "info",
+          "target": [
+            "list",
+            "object",
+            "info"
+          ]
         }
       ],
       "targets": {
@@ -118,6 +127,12 @@
           "viewId": "detail",
           "viewLevel": 1,
           "controlAggregation": "midColumnPages"
+        },
+        "info": {
+          "viewName": "Info",
+          "viewId": "info",
+          "viewLevel": 2,
+          "controlAggregation": "endColumnPages"
         },
         "detailObjectNotFound": {
           "viewName": "DetailObjectNotFound",

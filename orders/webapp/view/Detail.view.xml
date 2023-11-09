@@ -2,12 +2,15 @@
     controllerName="opensap.orders.orders.controller.Detail"
     xmlns="sap.m"
     xmlns:semantic="sap.f.semantic"
-    xmlns:mvc="sap.ui.core.mvc">
+    xmlns:tnt="sap.tnt"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:si="sap.suite.ui.commons.statusindicator">
 
     <semantic:SemanticPage
         id="detailPage"
         busy="{detailView>/busy}"
-        busyIndicatorDelay="{detailView>/delay}">
+        busyIndicatorDelay="{detailView>/delay}"
+        showFooter="true">
         <semantic:titleHeading>
             <Title
                 text="{CustomerName}"
@@ -21,6 +24,12 @@
                     formatter: '.formatter.numberUnit'
                 }"
                 unit="{CurrencyCode}" />
+                <tnt:InfoLabel
+				text="{LifecycleStatusDescription}"
+				colorScheme="{
+					path: 'LifecycleStatus',
+					formatter: '.formatter.deliveryStatus'
+				}"/>
         </semantic:headerContent>
         <semantic:content>
 
@@ -30,7 +39,10 @@
                 items="{ToLineItems}"
                 updateFinished=".onListUpdateFinished"
                 noDataText="{i18n>detailLineItemTableNoDataText}"
-                busyIndicatorDelay="{detailView>/lineItemTableDelay}">
+                busyIndicatorDelay="{detailView>/lineItemTableDelay}"
+                sticky="ColumnHeaders,HeaderToolbar"
+                mode="SingleSelectMaster"
+                selectionChange=".onSelectChange">
                 <headerToolbar>
                     <Toolbar>
                         <Title
@@ -41,9 +53,20 @@
                     </Toolbar>
                 </headerToolbar>
                 <columns>
-                    <Column>
-                        <Text text="{i18n>detailLineItemTableIDColumn}"/>
-                    </Column>
+                	<Column>
+						<Text text="{i18n>detailLineItemTableIDQuantity}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableIDColumn}"/>
+					</Column>
+					<Column
+						minScreenWidth="Tablet"
+						demandPopin="true">
+						<Text text="{i18n>detailLineItemTableDeliveryDate}"/>
+					</Column>
+					<Column>
+						<Text text="{i18n>detailLineItemTableDeliveryUrgency}"/>
+					</Column>
                     <Column
                         minScreenWidth="Tablet"
                         demandPopin="true"
@@ -52,19 +75,45 @@
                     </Column>
                 </columns>
                 <items>
-                    <ColumnListItem>
-                        <cells>
-                            <ObjectIdentifier
-                                title="{ProductID}"
-                                text="{ItemPosition}"/>
-                            <ObjectNumber
-                                number="{
-                                    path: 'NetAmount',
-                                    formatter: '.formatter.currencyValue'
-                                }"
-                                unit="{CurrencyCode}" />
-                        </cells>
-                    </ColumnListItem>
+                   <ColumnListItem
+						selected="{= ${ItemPosition} === ${appView>/selectedItemId} }"
+						type="Navigation">
+						<cells>
+							<ObjectNumber
+								number="{Quantity}"/>
+							<ObjectIdentifier
+								title="{ProductID}"
+								text="{ItemPosition}"/>
+							<Text text="{
+								path: 'DeliveryDate',
+								type: 'sap.ui.model.type.Date',
+								formatOptions: {
+									style: 'medium'
+								}
+							}"/>
+							<si:StatusIndicator
+								id="statusIndicator"
+								width="4.5rem"
+								height="3.5rem"
+								value="{= 100 - (Date.now() - Date.parse(${DeliveryDate})) / 86400000 * 7 }">
+								<si:ShapeGroup>
+									<si:LibraryShape id="customShape0" shapeId="vehicle_truck_1"/>
+								</si:ShapeGroup>
+								<si:propertyThresholds>
+									<si:PropertyThreshold fillColor="Error" toValue="50"/>
+									<si:PropertyThreshold fillColor="Critical" toValue="65"/>
+									<si:PropertyThreshold fillColor="Neutral" toValue="80"/>
+									<si:PropertyThreshold fillColor="Good" toValue="100"/>
+								</si:propertyThresholds>
+							</si:StatusIndicator>
+							<ObjectNumber
+								number="{
+									path: 'NetAmount',
+									formatter: '.formatter.currencyValue'
+								}"
+								unit="{CurrencyCode}"/>
+						</cells>
+					</ColumnListItem>
                 </items>
             </Table>
         </semantic:content>
@@ -93,6 +142,18 @@
                     visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"
                     press=".toggleFullScreen"/>
         </semantic:exitFullScreenAction>
+
+        <semantic:positiveAction>
+			<semantic:PositiveAction/>
+		</semantic:positiveAction>
+
+		<semantic:negativeAction>
+			<semantic:NegativeAction/>
+		</semantic:negativeAction>
+
+		<semantic:footerCustomActions>
+			<Button text="{i18n>DetailFooterCancel}"/>
+		</semantic:footerCustomActions>
 
     </semantic:SemanticPage>
 
