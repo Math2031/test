@@ -6,7 +6,9 @@
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:l="sap.ui.layout"
     xmlns:si="sap.suite.ui.commons.statusindicator"
-    xmlns:control="opensap.orders.orders.control">
+    xmlns:control="opensap.orders.orders.control"
+    xmlns:dnd="sap.ui.core.dnd"
+>
     <semantic:SemanticPage
         id="detailPage"
         busy="{detailView>/busy}"
@@ -63,9 +65,28 @@
                             />
                             <ToolbarSpacer />
                             <Button
-								icon="sap-icon://add"
-								tooltip="{i18n>createButtonTooltip}"
-								press=".onCreate"/>
+                                icon="sap-icon://add"
+                                tooltip="{i18n>createButtonTooltip}"
+                                press=".onCreate"
+                            />
+                            <Button
+                                icon="sap-icon://navigation-up-arrow"
+                                press=".onMoveUp"
+                                tooltip="{i18n>tooltipMoveUpButton}"
+                            />
+                            <Button
+                                icon="sap-icon://navigation-down-arrow"
+                                press=".onMoveDown"
+                                tooltip="{i18n>tooltipMoveDownButton}"
+                            />
+                            <control:DeleteButton
+                                icon="sap-icon://delete"
+                                press=".onDelete"
+                            >
+                                <control:dragDropConfig>
+                                    <dnd:DropInfo drop=".onDelete" />
+                                </control:dragDropConfig>
+                            </control:DeleteButton>
                         </Toolbar>
                     </headerToolbar>
                     <columns>
@@ -98,6 +119,14 @@
                             />
                         </Column>
                     </columns>
+                    <dragDropConfig>
+                        <dnd:DragDropInfo
+                            sourceAggregation="items"
+                            targetAggregation="items"
+                            dropPosition="Between"
+                            drop=".onReorder"
+                        />
+                    </dragDropConfig>
                     <items>
                         <ColumnListItem
                             selected="{= ${ItemPosition} === ${appView>/selectedItemId} }"

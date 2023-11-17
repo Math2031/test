@@ -22,9 +22,9 @@ sap.ui.define([
             // detail page is busy indication immediately so there is no break in
             // between the busy indication for loading the view's meta data
             var oViewModel = new JSONModel({
-                busy : false,
-                delay : 0,
-                lineItemListTitle : this.getResourceBundle().getText("detailLineItemTableHeading")
+                busy: false,
+                delay: 0,
+                lineItemListTitle: this.getResourceBundle().getText("detailLineItemTableHeading")
             });
 
             this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -53,7 +53,7 @@ sap.ui.define([
             );
         },
 
-        
+
         /**
          * Updates the item count within the line item table's header
          * @param {object} oEvent an event containing the total number of items in the list
@@ -75,21 +75,21 @@ sap.ui.define([
                 oViewModel.setProperty("/lineItemListTitle", sTitle);
             }
         },
-        
+
         onSelectChange: function (oEvent) {
             var bReplace = !this.getModel("device").getData().system.phone;
-			this.getRouter().navTo("info", {
-				objectId : (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("SalesOrderID"),
-				itemPosition : (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("ItemPosition")
-			}, bReplace);
+            this.getRouter().navTo("info", {
+                objectId: (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("SalesOrderID"),
+                itemPosition: (oEvent.getParameter("listItem") || oEvent.getSource()).getBindingContext().getProperty("ItemPosition")
+            }, bReplace);
         },
 
         onCreate: function (oEvent) {
-			var bReplace = !this.getModel("device").getData().system.phone;
-			this.getRouter().navTo("create", {
-				objectId : oEvent.getSource().getBindingContext().getProperty("SalesOrderID")
-			}, bReplace);
-		},
+            var bReplace = !this.getModel("device").getData().system.phone;
+            this.getRouter().navTo("create", {
+                objectId: oEvent.getSource().getBindingContext().getProperty("SalesOrderID")
+            }, bReplace);
+        },
 
         /* =========================================================== */
         /* begin: internal methods                                     */
@@ -102,12 +102,12 @@ sap.ui.define([
          * @private
          */
         _onObjectMatched: function (oEvent) {
-            var sObjectId =  oEvent.getParameter("arguments").objectId;
-            if(!sObjectId) return;
+            var sObjectId = oEvent.getParameter("arguments").objectId;
+            if (!sObjectId) return;
             this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
-            this.getModel().metadataLoaded().then( function() {
+            this.getModel().metadataLoaded().then(function () {
                 var sObjectPath = this.getModel().createKey("SalesOrderSet", {
-                    SalesOrderID:  sObjectId
+                    SalesOrderID: sObjectId
                 });
                 this._bindView("/" + sObjectPath);
             }.bind(this));
@@ -128,10 +128,10 @@ sap.ui.define([
             oViewModel.setProperty("/busy", false);
 
             this.getView().bindElement({
-                path : sObjectPath,
+                path: sObjectPath,
                 events: {
-                    change : this._onBindingChange.bind(this),
-                    dataRequested : function () {
+                    change: this._onBindingChange.bind(this),
+                    dataRequested: function () {
                         oViewModel.setProperty("/busy", true);
                     },
                     dataReceived: function () {
@@ -181,7 +181,7 @@ sap.ui.define([
             oViewModel.setProperty("/delay", 0);
             oViewModel.setProperty("/lineItemTableDelay", 0);
 
-            oLineItemTable.attachEventOnce("updateFinished", function() {
+            oLineItemTable.attachEventOnce("updateFinished", function () {
                 // Restore original busy indicator delay for line item table
                 oViewModel.setProperty("/lineItemTableDelay", iOriginalLineItemTableBusyDelay);
             });
@@ -214,8 +214,112 @@ sap.ui.define([
                 this.getModel("appView").setProperty("/layout", "MidColumnFullScreen");
             } else {
                 // reset to previous layout
-                this.getModel("appView").setProperty("/layout",  this.getModel("appView").getProperty("/previousLayout"));
+                this.getModel("appView").setProperty("/layout", this.getModel("appView").getProperty("/previousLayout"));
             }
+        },
+        onConfirm: function (oEvent) {
+            var oBinding = oEvent.getSource().getBindingContext().getObject();
+            var oMessage = this.getResourceBundle().getText("OrderPreparationMessage", [oBinding.CustomerID, oBinding.CustomerName]);
+            MessageToast.show(oMessage);
+        },
+        onDelete: function (oEvent) {
+            let oItemToDelete = oEvent.getParameter("draggedControl");
+            if (!oItemToDelete) {
+                oItemToDelete = this.byId("lineItemsList").getSelectedItem() || this.byId("lineItemsList").getItems()[0];
+            }
+            let sTitle = oItemToDelete.getBindingContext().getProperty("ProductID");
+            this._confirmDelete(oItemToDelete.getBindingContextPath(), sTitle);
+        },
+        onReorder: function (oEvent) {
+            var oDraggedItem = oEvent.getParameter("draggedControl"),
+                oDroppedItem = oEvent.getParameter("droppedControl"),
+                sDropPosition = oEvent.getParameter("dropPosition"),
+                oList = this.byId("lineItemsList"),
+                // get the index of dragged item
+                iDraggedIndex = oList.indexOfItem(oDraggedItem),
+                // get the index of dropped item
+                iDroppedIndex = oList.indexOfItem(oDroppedItem),
+                // get the new dropped item index
+                iNewDroppedIndex = iDroppedIndex + (sDropPosition === "Before" ? 0 : 1) + (iDraggedIndex < iDroppedIndex ? -1 : 0);
+
+            // remove the dragged item
+            oList.removeItem(oDraggedItem);
+            // insert the dragged item on the new drop index
+            oList.insertItem(oDraggedItem, iNewDroppedIndex);
+        },
+        _confirmDelete: function (sPath, sTitle) {
+            var oResourceBundle = this.getResourceBundle();
+            sap.ui.require(["sap/m/MessageBox"], function (MessageBox) {
+                MessageBox.confirm(oResourceBundle.getText("deleteConfirmationMessage", [sTitle]), {
+                    title: oResourceBundle.getText("confirmTitle"),
+                    onClose: function (sAction) {
+                        if (sAction === "OK") {
+                            this.getModel().remove(sPath, {
+                                success: function () {
+                                    MessageToast.show(oResourceBundle.getText("deleteSuccessMessage"));
+                                },
+                                error: function () {
+                                    MessageBox.error(oResourceBundle.getText("deleteErrorMessage"));
+                                }
+                            });
+                        }
+                    }.bind(this)
+                });
+            }.bind(this));
+        },
+        /**
+         * Move up the selected item
+         * This is an alternative to reorder the list item
+         * for devices that do not support drag and drop
+         */
+        onMoveUp: function () {
+            var oList = this.byId("lineItemsList"),
+                oSelectedItem = oList.getSelectedItem();
+            if (!oSelectedItem) {
+                this._showItemNotSelectedMsg();
+                return;
+            }
+            this._moveSelectedItem(oSelectedItem, "Up");
+        },
+
+        /**
+         * Move down the selected item
+         * This is an alternative to reorder the list item
+         * for devices that do not support drag and drop
+         */
+        onMoveDown: function () {
+            var oList = this.byId("lineItemsList"),
+                oSelectedItem = oList.getSelectedItem();
+            if (!oSelectedItem) {
+                this._showItemNotSelectedMsg();
+                return;
+            }
+            this._moveSelectedItem(oSelectedItem, "Down");
+        },
+
+        /**
+         * Move the selected item in the given direction (up or down)
+         * @param {oSelectedItem} The selected item object
+         * @param {sDirection} Direction in which the item should move
+         */
+        _moveSelectedItem: function (oSelectedItem, sDirection) {
+            var oList = this.byId("lineItemsList"),
+                iIndex = oList.indexOfItem(oSelectedItem);
+            oList.removeItem(oSelectedItem);
+            if (sDirection === "Up") {
+                iIndex += (iIndex <= 0 ? 0 : -1);
+            } else {
+                iIndex += (iIndex >= oList.getItems().length ? 0 : 1);
+            }
+            oList.insertItem(oSelectedItem, iIndex);
+        },
+
+        /**
+         * Inform the user if no item is selected to move
+         */
+        _showItemNotSelectedMsg: function () {
+            var oResourceBundle = this.getResourceBundle();
+            MessageToast.show(oResourceBundle.getText("selectItemToMoveMsg"));
         }
     });
 
