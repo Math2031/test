@@ -42,6 +42,19 @@
           "localUri": "annotations/annotation.xml"
         }
       }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "Booking-analysis": {
+          "semanticObject": "Booking",
+          "action": "analysis",
+          "title": "{{flpTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
     }
   },
   "sap.ui": {
@@ -152,5 +165,9 @@
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "analytical"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "sapfedemobookinganalysis"
   }
 }
