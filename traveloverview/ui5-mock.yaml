@@ -1,0 +1,49 @@
+specVersion: "3.1"
+metadata:
+  name: sap.fe.demo.traveloverview
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+        backend:
+          - scp: true
+            path: /sap
+            url: https://089b04d5-c34c-49d4-80b9-96228076931c.abap.us10.hana.ondemand.com
+            destination: abap-cloud-default_abap-trial-0e4718a9trial-dev
+          - path: /sap/opu/odata4/sap/zui_fe_travel_001105_o4/srvd/sap/zui_fe_travel_001105_o4/0001/
+            url: https://089b04d5-c34c-49d4-80b9-96228076931c.abap.us10.hana.ondemand.com
+            destination: abap-cloud-default_abap-trial-0e4718a9trial-dev
+            scp: true
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: sap-fe-mockserver
+      beforeMiddleware: csp
+      configuration:
+        mountPath: /
+        services:
+          - urlPath: /sap/opu/odata/sap/ZUI_FE_BOOKING_001105_O2
+            metadataPath: ./webapp/localService/metadata.xml
+            mockdataPath: ./webapp/localService/data
+            generateMockData: true
+        annotations: []
+        service:
+          - urlPath: /sap/opu/odata/sap/ZUI_FE_BOOKING_001105_O2
+            generateMockData: true
+            metadataXmlPath: ./webapp/localService/mainService/metadata.xml
+            mockdataRootPath: ./webapp/localService/data
+          - urlPath: /sap/opu/odata4/sap/zui_fe_travel_001105_o4/srvd/sap/zui_fe_travel_001105_o4/0001/
+            metadataXmlPath: ./webapp/localService/zui_fe_travel_001105_o4/metadata.xml
+            mockdataRootPath: ./webapp/localService/zui_fe_travel_001105_o4/mockdata
+            generateMockData: true
